@@ -13,9 +13,7 @@ class IMDbPage:
 
     def search_movie(self, movie_name):
         with allure.step(f"Ввести в поиск '{movie_name}' и нажать Enter"):
-            search_input = self.wait.until(
-                EC.presence_of_element_located((By.NAME, "q"))
-            )
+            search_input = self.wait.until(EC.presence_of_element_located((By.NAME, "q")))
             search_input.clear()
             search_input.send_keys(movie_name)
             search_input.send_keys(Keys.RETURN)
@@ -24,33 +22,23 @@ class IMDbPage:
     def open_first_movie(self):
         with allure.step("Открыть первый фильм в результатах поиска"):
             time.sleep(3)
-            self.wait.until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "a[href*='/title/tt']")
-                )
-            )
-            results = self.driver.find_elements(
-                By.CSS_SELECTOR, "a[href*='/title/tt']"
-            )
+            self.wait.until(EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "a[href*='/title/tt']")))
+            results = self.driver.find_elements(By.CSS_SELECTOR, "a[href*='/title/tt']")
             if results:
                 results[0].click()
             time.sleep(3)
 
     def get_movie_title(self):
         with allure.step("Получить название фильма"):
-            title = self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "h1"))
-            )
+            title = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "h1")))
             return title.text
 
     def get_rating(self):
         with allure.step("Получить рейтинг фильма"):
             try:
-                rating = self.wait.until(
-                    EC.presence_of_element_located(
-                        (By.CSS_SELECTOR, "span[itemprop='ratingValue']")
-                    )
-                )
+                rating = self.wait.until(EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "span[itemprop='ratingValue']")))
                 return rating.text
             except Exception:
                 return "8.5"
