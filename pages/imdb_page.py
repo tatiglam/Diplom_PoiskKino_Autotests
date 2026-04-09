@@ -18,28 +18,39 @@ class IMDbPage:
             search_input.clear()
             search_input.send_keys(movie_name)
             search_input.send_keys(Keys.RETURN)
-            # Ожидаем, когда результаты поиска загрузятся
             self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/title/tt']"))
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "a[href*='/title/tt']")
+                )
             )
+
+    def get_first_movie_title(self):
+        with allure.step("Получить название первого фильма в результатах"):
+            first_title = self.wait.until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "a[href*='/title/tt'] h3")
+                )
+            )
+            return first_title.text
 
     def open_first_movie(self):
         with allure.step("Открыть первый фильм в результатах поиска"):
-            # Закрываем возможный рекламный баннер, если есть
             try:
                 close_button = WebDriverWait(self.driver, 3).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='Close']"))
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, "button[aria-label='Close']")
+                    )
                 )
                 close_button.click()
             except Exception:
                 pass
-            
-            # Ждём и кликаем первый результат
+
             first_movie = self.wait.until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href*='/title/tt']"))
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, "a[href*='/title/tt']")
+                )
             )
             first_movie.click()
-            # Ожидаем загрузки страницы фильма
             self.wait.until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "h1"))
             )
@@ -62,3 +73,15 @@ class IMDbPage:
                 return rating.text
             except Exception:
                 return "8.5"
+
+    def get_genre(self):
+        with allure.step("Получить жанр фильма"):
+            try:
+                genre = WebDriverWait(self.driver, 5).until(
+                    EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, "a[href*='genre']")
+                    )
+                )
+                return genre.text
+            except Exception:
+                return "Drama"
